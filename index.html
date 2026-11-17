@@ -1,0 +1,1339 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>立體圖形的頂點和稜 - 香港小學數學</title>
+  <!-- 引入 html2canvas 程式庫以支援報告圖片下載 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    /* 全局樣式與 iPad 觸控優化 */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Microsoft JhengHei", sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: #f0f4f8;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      touch-action: manipulation;
+    }
+
+    /* 頂部導覽列 */
+    header {
+      background-color: #2b5278;
+      color: white;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    header h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    .lang-btn {
+      background-color: transparent;
+      border: 1px solid white;
+      color: white;
+      padding: 8px 18px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.2s;
+      min-height: 44px;
+    }
+
+    .lang-btn:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .page-title {
+      text-align: center;
+      font-size: 1.8rem;
+      color: #2b5278;
+      margin-bottom: 30px;
+      font-weight: bold;
+    }
+
+    /* 首頁選單網格 */
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 25px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 35px 25px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      border: 2px solid transparent;
+      min-height: 160px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    .card:hover, .card:active {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+      border-color: #4a90e2;
+    }
+
+    .card h3 {
+      font-size: 1.4rem;
+      color: #1a365d;
+      margin-bottom: 12px;
+    }
+
+    .card p {
+      color: #666;
+      font-size: 0.98rem;
+      line-height: 1.5;
+    }
+
+    /* 練習界面 */
+    .quiz-wrapper {
+      max-width: 780px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .back-nav-btn {
+      background: white;
+      border: 1px solid #cbd5e0;
+      color: #4a5568;
+      padding: 10px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: bold;
+      margin-bottom: 15px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+      transition: all 0.2s;
+      min-height: 44px;
+    }
+
+    .back-nav-btn:hover {
+      background-color: #edf2f7;
+      color: #2b6cb0;
+    }
+
+    .quiz-card {
+      background: white;
+      border-radius: 16px;
+      padding: 35px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+      width: 100%;
+    }
+
+    .quiz-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      border-bottom: 2px solid #edf2f7;
+      padding-bottom: 12px;
+    }
+
+    .quiz-progress {
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #3182ce;
+    }
+
+    .unit-tag {
+      background-color: #ebf8ff;
+      color: #2b6cb0;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.95rem;
+      font-weight: bold;
+    }
+
+    .level-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      margin-left: 8px;
+    }
+    .level-easy { background-color: #c6f6d5; color: #22543d; }
+    .level-medium { background-color: #feebc8; color: #744210; }
+    .level-hard { background-color: #fed7d7; color: #9b2c2c; }
+
+    .question-display {
+      margin: 15px 0;
+      text-align: center;
+      font-size: 1.4rem;
+      color: #2d3748;
+      font-weight: bold;
+      line-height: 1.8;
+    }
+
+    .svg-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 10px 0 20px 0;
+      min-height: 220px;
+    }
+
+    .input-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: #2d3748;
+    }
+
+    .input-select {
+      font-size: 1.3rem;
+      padding: 8px 12px;
+      border: 2px solid #cbd5e0;
+      border-radius: 8px;
+      outline: none;
+      background-color: white;
+      min-height: 50px;
+      cursor: pointer;
+    }
+    
+    .input-select:focus {
+      border-color: #3182ce;
+    }
+
+    .answer-input {
+      font-size: 1.5rem;
+      width: 100px;
+      text-align: center;
+      border: 2px solid #cbd5e0;
+      border-radius: 8px;
+      padding: 6px 10px;
+      outline: none;
+      transition: border-color 0.2s;
+      min-height: 50px;
+    }
+
+    .answer-input:focus {
+      border-color: #3182ce;
+    }
+
+    /* 答錯與答對的動畫與樣式 */
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      50% { transform: translateX(6px); }
+      75% { transform: translateX(-6px); }
+    }
+
+    .input-error {
+      border-color: #e53e3e !important;
+      background-color: #fff5f5 !important;
+      animation: shake 0.4s ease-in-out;
+    }
+
+    .input-correct {
+      border-color: #38a169 !important;
+      background-color: #f0fff4 !important;
+      color: #276749 !important;
+      pointer-events: none;
+    }
+
+    /* 隱藏數字輸入框的上下箭頭 */
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    input[type="number"] {
+      -moz-appearance: textfield;
+    }
+
+    .btn {
+      display: inline-block;
+      width: 100%;
+      padding: 14px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      text-align: center;
+      min-height: 48px;
+    }
+
+    .btn:active {
+      transform: scale(0.99);
+    }
+
+    .btn-primary { background-color: #3182ce; color: white; }
+    .btn-primary:hover { background-color: #2b6cb0; }
+
+    .btn-success { background-color: #38a169; color: white; }
+    .btn-success:hover { background-color: #2f855a; }
+
+    .btn-purple { background-color: #8e44ad; color: white; margin-bottom: 10px; }
+    .btn-purple:hover { background-color: #7d3c98; }
+
+    .btn-sky { background-color: #38bdf8; color: white; margin-bottom: 10px; }
+    .btn-sky:hover { background-color: #0284c7; }
+
+    .btn-gray { background-color: #7f8c8d; color: white; }
+    .btn-gray:hover { background-color: #636e72; }
+
+    /* 反饋與提示訊息 */
+    .feedback-box {
+      margin-top: 20px;
+      padding: 18px;
+      border-radius: 12px;
+      text-align: left;
+      font-size: 1.1rem;
+      line-height: 1.6;
+    }
+
+    .feedback-success {
+      background-color: #c6f6d5;
+      color: #22543d;
+      border: 1px solid #9ae6b4;
+      text-align: center;
+    }
+
+    .feedback-warning {
+      background-color: #fffaf0;
+      color: #744210;
+      border: 1px solid #fbd38d;
+    }
+
+    .feedback-danger {
+      background-color: #fff5f5;
+      color: #742a2a;
+      border: 1px solid #feb2b2;
+    }
+
+    /* 解題步驟卡片樣式 */
+    .vertical-solution-card {
+      background-color: #fff5f5;
+      border: 1px solid #fed7d7;
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 10px;
+      text-align: left;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    .solution-header {
+      color: #9b2c2c;
+      font-size: 1.25rem;
+      font-weight: bold;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .step-box {
+      background: white;
+      border-left: 4px solid #3182ce;
+      padding: 12px 16px;
+      border-radius: 6px;
+      margin-top: 12px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      font-size: 1.1rem;
+      color: #2d3748;
+    }
+
+    .solution-footer-ans {
+      color: #e53e3e;
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-top: 15px;
+      border-top: 1px dashed #feb2b2;
+      padding-top: 10px;
+    }
+
+    .solution-footer-tip {
+      color: #744210;
+      font-size: 0.95rem;
+      margin-top: 6px;
+    }
+
+    /* 分析報告界面 */
+    .report-card {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      max-width: 650px;
+      margin: 0 auto;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+
+    .report-title {
+      text-align: center;
+      color: #3182ce;
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+
+    .report-section {
+      background-color: #f8fafc;
+      border-radius: 8px;
+      padding: 12px 20px;
+      margin-bottom: 15px;
+    }
+
+    .report-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      color: #4a5568;
+      font-size: 0.95rem;
+    }
+
+    .report-row.dashed {
+      border-bottom: 1px dashed #cbd5e0;
+    }
+
+    .report-val { font-weight: bold; }
+    .val-green { color: #276749; }
+    .val-red { color: #9b2c2c; }
+    .val-blue { color: #0284c7; }
+
+    .section-label {
+      font-weight: bold;
+      color: #2d3748;
+      margin: 15px 0 10px 0;
+      font-size: 1rem;
+    }
+
+    .list-box {
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+    }
+
+    .list-box.correct-bg { background-color: #f7fafc; }
+    .list-box.wrong-bg { background-color: #f7fafc; }
+
+    .list-title {
+      font-weight: bold;
+      font-size: 1.05rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .item-card-correct {
+      background: #f0fff4;
+      border: 1px solid #c6f6d5;
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+      color: #22543d;
+      font-weight: 500;
+    }
+
+    .item-card-wrong {
+      background: #fff5f5;
+      border: 1px solid #fed7d7;
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+      color: #9b2c2c;
+      font-weight: 500;
+    }
+
+    .item-q-title { margin-bottom: 6px; color: #2d3748; font-weight: bold; }
+
+    /* Modal 彈窗 */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-box {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+
+    .modal-box h3 { margin-bottom: 12px; color: #2b5278; }
+    .modal-box p { margin-bottom: 20px; color: #4a5568; }
+
+    .modal-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 768px) {
+      .quiz-card { padding: 25px 15px; }
+      .input-row { font-size: 1.1rem; gap: 8px; }
+      .input-select { font-size: 1.1rem; padding: 6px 8px; }
+      .answer-input { font-size: 1.2rem; width: 80px; }
+      .question-display { font-size: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1 id="header-title">立體圖形的頂點和稜</h1>
+    <button id="lang-toggle-btn" class="lang-btn" onclick="toggleLanguage()">English</button>
+  </header>
+
+  <main>
+    <div class="container">
+
+      <!-- 1. 首頁選擇界面 -->
+      <div id="page-home">
+        <h2 id="home-subtitle" class="page-title">請選擇學習單元</h2>
+        <div class="menu-grid">
+          <div class="card" role="button" tabindex="0" onclick="startQuiz()">
+            <h3 id="u1-title">單元一：頂點和稜</h3>
+            <p id="u1-desc">學習分辨三角至八角的柱體和錐體，並掌握計算立體圖形頂點與稜數量的規律與公式。</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. 答題界面 -->
+      <div id="page-quiz" class="hidden">
+        <div class="quiz-wrapper">
+          <button class="back-nav-btn" onclick="askReturnHome()">
+            <span id="lbl-back">← 返回主頁</span>
+          </button>
+
+          <div class="quiz-card">
+            <div class="quiz-header">
+              <div>
+                <span class="unit-tag" id="lbl-unit-tag">立體圖形的頂點和稜</span>
+                <span id="quiz-level-badge" class="level-badge"></span>
+              </div>
+              <span id="quiz-progress-text" class="quiz-progress">題目 1 / 10</span>
+            </div>
+
+            <!-- 動態生成題目內容區塊 -->
+            <div id="dynamic-question-area"></div>
+
+            <div id="action-area" style="margin-top: 25px;">
+              <button id="btn-submit" class="btn btn-primary" onclick="checkAnswer()">提交答案</button>
+              <button id="btn-next" class="btn btn-success hidden" onclick="nextQuestion()">下一題 ➔</button>
+            </div>
+
+            <div id="feedback-area" class="hidden"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. 表現分析報告 -->
+      <div id="page-report" class="hidden">
+        <div id="report-card-to-capture" class="report-card">
+          <h2 class="report-title" id="rep-title">練習完成！表現分析報告</h2>
+
+          <div class="report-section">
+            <div class="report-row dashed">
+              <span id="lbl-rep-start">開始時間：</span>
+              <span id="val-start-time" class="report-val">--</span>
+            </div>
+            <div class="report-row dashed">
+              <span id="lbl-rep-end">完成時間：</span>
+              <span id="val-end-time" class="report-val">--</span>
+            </div>
+            <div class="report-row">
+              <span id="lbl-rep-dur">總用時：</span>
+              <span id="val-duration" class="report-val val-blue">--</span>
+            </div>
+          </div>
+
+          <div class="report-section">
+            <div class="report-row dashed">
+              <span id="lbl-rep-tot">總答對題數：</span>
+              <span id="val-correct-count" class="report-val val-green">0 / 10</span>
+            </div>
+            <div class="report-row">
+              <span id="lbl-rep-acc">整體正確率：</span>
+              <span id="val-accuracy" class="report-val">0%</span>
+            </div>
+          </div>
+
+          <div class="list-box correct-bg">
+            <div class="list-title val-green">
+              <span>☑</span> <span id="lbl-rep-right">答對的題目</span>
+            </div>
+            <div id="correct-list-container"></div>
+          </div>
+
+          <div class="list-box wrong-bg">
+            <div class="list-title val-red">
+              <span>✕</span> <span id="lbl-rep-wrong">答錯 / 需要協助的題目</span>
+            </div>
+            <div id="wrong-list-container"></div>
+          </div>
+
+          <div data-html2canvas-ignore="true" style="margin-top: 20px;">
+            <button class="btn btn-purple" id="btn-dl" onclick="downloadReportImage()">💾 下載報告圖片</button>
+            <button class="btn btn-sky" id="btn-retry" onclick="startQuiz()">🔄 我想再試</button>
+            <button class="btn btn-gray" id="btn-home" onclick="goHome()">回到主頁</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- 通用 Modal -->
+  <div id="custom-modal" class="modal-overlay">
+    <div class="modal-box">
+      <h3 id="modal-title">提示</h3>
+      <p id="modal-msg">內容訊息</p>
+      <div class="modal-buttons">
+        <button id="modal-cancel-btn" class="btn btn-gray" style="flex: 1;" onclick="closeModal()">取消</button>
+        <button id="modal-confirm-btn" class="btn btn-primary" style="flex: 1;" onclick="confirmModalAction()">確定</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- 多語言支援 ---
+    const i18n = {
+      zh: {
+        appTitle: '立體圖形的頂點和稜',
+        homeSub: '請選擇學習單元',
+        u1Title: '單元一：頂點和稜',
+        u1Desc: '學習分辨三角至八角的柱體和錐體，並掌握計算立體圖形頂點與稜數量的規律與公式。',
+        back: '← 返回主頁',
+        qProgress: '題目',
+        easy: '初階', med: '中階', hard: '高階',
+        whatShape: '這是甚麼立體？',
+        itHas1: '它有', itHas2: '個頂點和', itHas3: '條稜。',
+        selectPls: '(請選擇)',
+        shapesBase: {3:'三角', 4:'四角', 5:'五角', 6:'六角', 7:'七角', 8:'八角'},
+        shapesType: {prism:'柱', pyramid:'錐'},
+        qMedText: (name) => `${name}有多少個頂點及有多少條稜？`,
+        medV: '頂點：', medE: '稜：', unitV: ' 個', unitE: ' 條',
+        qHardText: (v, e) => `一個立體有 ${v} 個頂點和 ${e} 條稜，這是甚麼立體？`,
+        submit: '提交答案', next: '下一題 ➔',
+        errFillAll: '請填寫所有空格與下拉選項！',
+        cancel: '取消', confirm: '確定',
+        praise: '太棒了！答對了！',
+        tryAgain: '再試試看！清空的欄位有錯誤喔！',
+        hintPrism: '💡 柱體公式：頂點 = 底邊數 × 2，稜 = 底邊數 × 3',
+        hintPyramid: '💡 錐體公式：頂點 = 底邊數 + 1，稜 = 底邊數 × 2',
+        solTitle: '📘 題解思路',
+        solDesc: (name, n) => `這是一個<strong>${name}</strong>，底邊數為 ${n}。`,
+        solPrism: (n, v, e) => `<div>💡 <strong>柱體公式：</strong></div><div>頂點數量 = 底邊數 × 2 = ${n} × 2 = ${v}</div><div>稜的數量 = 底邊數 × 3 = ${n} × 3 = ${e}</div>`,
+        solPyramid: (n, v, e) => `<div>💡 <strong>錐體公式：</strong></div><div>頂點數量 = 底邊數 + 1 = ${n} + 1 = ${v}</div><div>稜的數量 = 底邊數 × 2 = ${n} × 2 = ${e}</div>`,
+        correctIs: '正確答案為：', tip: '看懂解題步驟後，請點擊下一題繼續練習！',
+        repTitle: '練習完成！表現分析報告', repStart: '開始時間：', repEnd: '完成時間：', repDur: '總用時：',
+        repTotal: '總答對題數：', repAcc: '整體正確率：',
+        repRight: '答對的題目', repWrong: '答錯 / 需要協助的題目',
+        noRight: '暫無第一次即答對的題目。', noWrong: '太厲害了！完全沒有答錯的題目！',
+        qLabel: (n, name) => `第 ${n} 題 (${name})`, ansIs: '正確答案：', yourAns: '你的首次回答：',
+        btnDL: '💾 下載報告圖片', btnRetry: '🔄 我想再試', btnHome: '回到主頁',
+        modalReturnTitle: '返回主頁提示',
+        modalReturnMsg: '離開將會重置目前的答題進度，確定要返回嗎？'
+      },
+      en: {
+        appTitle: 'Vertices and Edges of 3D Shapes',
+        homeSub: 'Please Select a Learning Unit',
+        u1Title: 'Unit 1: Vertices and Edges',
+        u1Desc: 'Learn to identify triangular to octagonal prisms and pyramids, and master the formulas for vertices and edges.',
+        back: '← Back to Home',
+        qProgress: 'Question',
+        easy: 'Easy', med: 'Medium', hard: 'Hard',
+        whatShape: 'What 3D shape is this?',
+        itHas1: 'It has', itHas2: 'vertices and', itHas3: 'edges.',
+        selectPls: '(Select)',
+        shapesBase: {3:'triangular', 4:'quadrilateral', 5:'pentagonal', 6:'hexagonal', 7:'heptagonal', 8:'octagonal'},
+        shapesType: {prism:'prism', pyramid:'pyramid'},
+        qMedText: (name) => `How many vertices and edges does a ${name} have?`,
+        medV: 'Vertices:', medE: 'Edges:', unitV: '', unitE: '',
+        qHardText: (v, e) => `A 3D shape has ${v} vertices and ${e} edges. What shape is it?`,
+        submit: 'Submit Answer', next: 'Next Question ➔',
+        errFillAll: 'Please fill in all blanks and select options!',
+        cancel: 'Cancel', confirm: 'Confirm',
+        praise: 'Excellent! Correct!',
+        tryAgain: 'Try again! Incorrect fields have been cleared!',
+        hintPrism: '💡 Prism Formula: Vertices = Base edges × 2, Edges = Base edges × 3',
+        hintPyramid: '💡 Pyramid Formula: Vertices = Base edges + 1, Edges = Base edges × 2',
+        solTitle: '📘 Solution',
+        solDesc: (name, n) => `This is a <strong>${name}</strong>. The base has ${n} edges.`,
+        solPrism: (n, v, e) => `<div>💡 <strong>Prism Formula:</strong></div><div>Vertices = Base edges × 2 = ${n} × 2 = ${v}</div><div>Edges = Base edges × 3 = ${n} × 3 = ${e}</div>`,
+        solPyramid: (n, v, e) => `<div>💡 <strong>Pyramid Formula:</strong></div><div>Vertices = Base edges + 1 = ${n} + 1 = ${v}</div><div>Edges = Base edges × 2 = ${n} × 2 = ${e}</div>`,
+        correctIs: 'The correct answer is: ', tip: 'After reviewing the solution, click next!',
+        repTitle: 'Practice Complete! Performance Report', repStart: 'Start Time:', repEnd: 'End Time:', repDur: 'Total Duration:',
+        repTotal: 'Total Correct:', repAcc: 'Overall Accuracy:',
+        repRight: 'Correct Questions', repWrong: 'Incorrect / Needs Help',
+        noRight: 'No correct answers on the first try.', noWrong: 'Awesome! No wrong answers!',
+        qLabel: (n, name) => `Q${n} (${name})`, ansIs: 'Correct Answer:', yourAns: 'Your 1st Try:',
+        btnDL: '💾 Download Report', btnRetry: '🔄 Try Again', btnHome: 'Back to Home',
+        modalReturnTitle: 'Return to Home',
+        modalReturnMsg: 'Leaving will reset your progress. Are you sure?'
+      }
+    };
+    let currentLang = 'zh';
+
+    function toggleLanguage() {
+      currentLang = (currentLang === 'zh') ? 'en' : 'zh';
+      document.getElementById('lang-toggle-btn').innerText = (currentLang === 'zh') ? 'English' : '中文';
+      
+      const t = i18n[currentLang];
+      document.getElementById('header-title').innerText = t.appTitle;
+      document.getElementById('home-subtitle').innerText = t.homeSub;
+      document.getElementById('u1-title').innerText = t.u1Title;
+      document.getElementById('u1-desc').innerText = t.u1Desc;
+
+      if (!document.getElementById('page-quiz').classList.contains('hidden')) {
+        document.getElementById('lbl-back').innerText = t.back;
+        document.getElementById('lbl-unit-tag').innerText = t.appTitle;
+        document.getElementById('btn-submit').innerText = t.submit;
+        document.getElementById('btn-next').innerText = t.next;
+        
+        // 如果還沒提交答案，切換語言時可以刷新畫面文字
+        if (!document.getElementById('btn-submit').classList.contains('hidden')) {
+          let savedVals = {};
+          document.querySelectorAll('.input-select, .answer-input').forEach(el => savedVals[el.id] = el.value);
+          loadQuestion();
+          document.querySelectorAll('.input-select, .answer-input').forEach(el => {
+            if(savedVals[el.id]) el.value = savedVals[el.id];
+          });
+        }
+      }
+      
+      if (!document.getElementById('page-report').classList.contains('hidden')) {
+        showReport(); // Refresh report text
+      }
+    }
+
+    // --- 題目生成與 3D 繪圖引擎 ---
+
+    function getShapeName(n, type) {
+      const t = i18n[currentLang];
+      return t.shapesBase[n] + (currentLang === 'zh' ? '' : ' ') + t.shapesType[type];
+    }
+
+    // 產生 3D 頂點與面/邊資料
+    function generateShape3D(n, type, orientation) {
+      let v = [];
+      let faces = [];
+      let edges = [];
+      let R = 65;
+      let H = 100;
+      let angleOffset = (n % 2 !== 0) ? -Math.PI / 2 : -Math.PI / n;
+
+      if (type === 'prism') {
+        for (let i = 0; i < n; i++) {
+          let a = angleOffset + i * 2 * Math.PI / n;
+          v.push({ x: R * Math.cos(a), y: -H / 2, z: R * Math.sin(a) });
+        }
+        for (let i = 0; i < n; i++) {
+          let a = angleOffset + i * 2 * Math.PI / n;
+          v.push({ x: R * Math.cos(a), y: H / 2, z: R * Math.sin(a) });
+        }
+        faces.push(Array.from({ length: n }, (_, i) => i)); // Top
+        faces.push(Array.from({ length: n }, (_, i) => 2 * n - 1 - i)); // Bot
+        for (let i = 0; i < n; i++) {
+          let next = (i + 1) % n;
+          faces.push([i, next, next + n, i + n]); // Sides
+        }
+        for (let i = 0; i < n; i++) {
+          let next = (i + 1) % n;
+          edges.push([i, next]); // top
+          edges.push([i + n, next + n]); // bot
+          edges.push([i, i + n]); // vertical
+        }
+      } else {
+        let baseY = (orientation === 'up') ? H / 2 : -H / 2;
+        let apexY = (orientation === 'up') ? -H / 2 : H / 2;
+        for (let i = 0; i < n; i++) {
+          let a = angleOffset + i * 2 * Math.PI / n;
+          v.push({ x: R * Math.cos(a), y: baseY, z: R * Math.sin(a) });
+        }
+        v.push({ x: 0, y: apexY, z: 0 }); // apex
+        
+        if (orientation === 'up') {
+          faces.push(Array.from({ length: n }, (_, i) => n - 1 - i));
+        } else {
+          faces.push(Array.from({ length: n }, (_, i) => i));
+        }
+        for (let i = 0; i < n; i++) {
+          let next = (i + 1) % n;
+          if (orientation === 'up') {
+            faces.push([i, n, next]);
+          } else {
+            faces.push([i, next, n]);
+          }
+          edges.push([i, next]);
+          edges.push([i, n]);
+        }
+      }
+      return { v, faces, edges };
+    }
+
+    // 將 3D 資料渲染成 SVG 透視圖或支架圖
+    function renderSVG(shapeData, style, colorBase) {
+      let tilt = 0.3; // 修正相機視角：改為正值，代表由上往下看，確保頂部為正面
+      let turn = 0.4;
+      
+      let v2d = shapeData.v.map(pt => {
+        let x1 = pt.x * Math.cos(turn) - pt.z * Math.sin(turn);
+        let z1 = pt.x * Math.sin(turn) + pt.z * Math.cos(turn);
+        let y2 = pt.y * Math.cos(tilt) - z1 * Math.sin(tilt);
+        let z2 = pt.y * Math.sin(tilt) + z1 * Math.cos(tilt);
+        return { x: x1 + 100, y: y2 + 100, z: z2 };
+      });
+
+      let svg = `<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">`;
+
+      if (style === 'solid') {
+        let faceInfos = shapeData.faces.map((faceIndices) => {
+          let sumZ = 0, cx_f = 0, cy_f = 0, cz_f = 0;
+          let pts = faceIndices.map(i => {
+            sumZ += v2d[i].z;
+            cx_f += shapeData.v[i].x; cy_f += shapeData.v[i].y; cz_f += shapeData.v[i].z;
+            return v2d[i];
+          });
+          let avgZ = sumZ / faceIndices.length;
+          cx_f /= faceIndices.length; cy_f /= faceIndices.length; cz_f /= faceIndices.length;
+          
+          // 計算原始 3D 面法向量
+          let v0 = shapeData.v[faceIndices[0]], v1 = shapeData.v[faceIndices[1]], v2 = shapeData.v[faceIndices[2]];
+          let nx = (v1.y - v0.y)*(v2.z - v0.z) - (v1.z - v0.z)*(v2.y - v0.y);
+          let ny = (v1.z - v0.z)*(v2.x - v0.x) - (v1.x - v0.x)*(v2.z - v0.z);
+          let nz = (v1.x - v0.x)*(v2.y - v0.y) - (v1.y - v0.y)*(v2.x - v0.x);
+          
+          // 確保法向量朝外
+          if (nx * cx_f + ny * cy_f + nz * cz_f < 0) { nx = -nx; ny = -ny; nz = -nz; }
+          
+          let len = Math.sqrt(nx*nx + ny*ny + nz*nz) || 1;
+          nx /= len; ny /= len; nz /= len;
+          
+          // 將法向量進行相同的旋轉，以判斷在相機視角下的朝向
+          let nx1 = nx * Math.cos(turn) - nz * Math.sin(turn);
+          let nz1 = nx * Math.sin(turn) + nz * Math.cos(turn);
+          let ny2 = ny * Math.cos(tilt) - nz1 * Math.sin(tilt);
+          let nz2 = ny * Math.sin(tilt) + nz1 * Math.cos(tilt);
+          
+          // 相機在 Z 軸負向看往正向，法向量 Z (nz2) < 0 代表面向我們
+          let isFront = nz2 < 0;
+          
+          return { faceIndices, pts, avgZ, nx, ny, nz, isFront };
+        });
+
+        let frontFaces = faceInfos.filter(f => f.isFront);
+        let frontEdgesSet = new Set();
+        frontFaces.forEach(f => {
+          for(let i = 0; i < f.faceIndices.length; i++){
+            let p1 = f.faceIndices[i], p2 = f.faceIndices[(i+1)%f.faceIndices.length];
+            frontEdgesSet.add(`${Math.min(p1, p2)}-${Math.max(p1, p2)}`);
+          }
+        });
+
+        let backEdgesList = [], frontEdgesList = [];
+        shapeData.edges.forEach(edge => {
+          let edgeStr = `${Math.min(edge[0], edge[1])}-${Math.max(edge[0], edge[1])}`;
+          if (frontEdgesSet.has(edgeStr)) frontEdgesList.push(edge);
+          else backEdgesList.push(edge);
+        });
+
+        // 1. 先畫背面的虛線（放在最底層，會被前方的透明面稍微遮蓋，增加立體感）
+        backEdgesList.forEach(edge => {
+          let p1 = v2d[edge[0]], p2 = v2d[edge[1]];
+          svg += `<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="#666" stroke-width="1.5" stroke-dasharray="5,4" />`;
+        });
+
+        // 2. 畫正面實色面 (使用較高透明度填滿，確保能看見後方的虛線)
+        frontFaces.sort((a, b) => b.avgZ - a.avgZ);
+        frontFaces.forEach(f => {
+          let pointsStr = f.pts.map(p => `${p.x},${p.y}`).join(' ');
+          let lightDot = -(f.nx * -0.5 + f.ny * -0.5 + f.nz * -0.7);
+          
+          let fill;
+          if (colorBase === 'prism') {
+            // 黃色系，帶有高透明度
+            fill = lightDot > 0 ? 'rgba(252, 232, 131, 0.4)' : 'rgba(247, 224, 112, 0.55)';
+          } else {
+            // 綠色系，帶有高透明度
+            fill = lightDot > 0 ? 'rgba(198, 246, 213, 0.4)' : 'rgba(154, 230, 180, 0.55)';
+          }
+          svg += `<polygon points="${pointsStr}" fill="${fill}" stroke="none" stroke-width="0" />`;
+        });
+        
+        // 3. 最後畫正面的實線（放在最上層）
+        frontEdgesList.forEach(edge => {
+          let p1 = v2d[edge[0]], p2 = v2d[edge[1]];
+          svg += `<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="#222" stroke-width="1.5" stroke-linejoin="round" />`;
+        });
+
+      } else if (style === 'framework') {
+        shapeData.edges.forEach(edge => {
+          let p1 = v2d[edge[0]], p2 = v2d[edge[1]];
+          svg += `<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="#A0522D" stroke-width="3" stroke-linecap="round" />`;
+        });
+        
+        let nodes = [...v2d].sort((a,b) => b.z - a.z); // 遠的點先畫
+        nodes.forEach(p => {
+          svg += `<circle cx="${p.x}" cy="${p.y}" r="6" fill="#4299E1" stroke="#2B6CB0" stroke-width="2" />`;
+        });
+      }
+      svg += `</svg>`;
+      return svg;
+    }
+
+    // --- 遊戲邏輯 ---
+
+    let currentQIndex = 0;
+    let questions = [];
+    let records = [];
+    let wrongAttempts = 0;
+    let startTimeObj = null;
+    let modalActionCallback = null;
+
+    function shuffle(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function generateQuestionsList() {
+      let pool = [];
+      for (let n = 3; n <= 8; n++) {
+        pool.push({ n, type: 'prism', v: n * 2, e: n * 3 });
+        pool.push({ n, type: 'pyramid', v: n + 1, e: n * 2 });
+      }
+      pool = shuffle(pool);
+
+      let qs = [];
+      
+      // 1. 初階 4 題 (2 題透視圖, 2 題支架圖)
+      for (let i = 0; i < 4; i++) {
+        let shape = pool.pop();
+        let style = (i < 2) ? 'solid' : 'framework';
+        let orientation = Math.random() > 0.5 ? 'up' : 'down';
+        let sData = generateShape3D(shape.n, shape.type, orientation);
+        let svgHtml = renderSVG(sData, style, shape.type);
+        qs.push({ level: 'easy', ...shape, style, svgHtml });
+      }
+
+      // 2. 中階 3 題 (不提供圖片)
+      for (let i = 0; i < 3; i++) {
+        qs.push({ level: 'medium', ...pool.pop() });
+      }
+
+      // 3. 高階 3 題 (提供頂點和稜，問立體名稱)
+      for (let i = 0; i < 3; i++) {
+        qs.push({ level: 'hard', ...pool.pop() });
+      }
+      return qs;
+    }
+
+    function startQuiz() {
+      questions = generateQuestionsList();
+      currentQIndex = 0;
+      records = [];
+      startTimeObj = new Date();
+
+      document.getElementById('page-home').classList.add('hidden');
+      document.getElementById('page-report').classList.add('hidden');
+      document.getElementById('page-quiz').classList.remove('hidden');
+
+      loadQuestion();
+    }
+
+    function getSelectsHTML(idPrefix) {
+      const t = i18n[currentLang];
+      return `
+        <select id="${idPrefix}-base" class="input-select">
+          <option value="">${t.selectPls}</option>
+          <option value="3">${t.shapesBase[3]}</option>
+          <option value="4">${t.shapesBase[4]}</option>
+          <option value="5">${t.shapesBase[5]}</option>
+          <option value="6">${t.shapesBase[6]}</option>
+          <option value="7">${t.shapesBase[7]}</option>
+          <option value="8">${t.shapesBase[8]}</option>
+        </select>
+        <select id="${idPrefix}-type" class="input-select">
+          <option value="">${t.selectPls}</option>
+          <option value="prism">${t.shapesType['prism']}</option>
+          <option value="pyramid">${t.shapesType['pyramid']}</option>
+        </select>
+      `;
+    }
+
+    function loadQuestion() {
+      wrongAttempts = 0;
+      const q = questions[currentQIndex];
+      const t = i18n[currentLang];
+
+      document.getElementById('quiz-progress-text').innerText = `${t.qProgress} ${currentQIndex + 1} / 10`;
+
+      const lvlBadge = document.getElementById('quiz-level-badge');
+      if (q.level === 'easy') {
+        lvlBadge.className = 'level-badge level-easy'; lvlBadge.innerText = t.easy;
+      } else if (q.level === 'medium') {
+        lvlBadge.className = 'level-badge level-medium'; lvlBadge.innerText = t.med;
+      } else {
+        lvlBadge.className = 'level-badge level-hard'; lvlBadge.innerText = t.hard;
+      }
+
+      const area = document.getElementById('dynamic-question-area');
+      area.innerHTML = '';
+      const shapeName = getShapeName(q.n, q.type);
+
+      if (q.level === 'easy') {
+        area.innerHTML = `
+          <div class="svg-container">${q.svgHtml}</div>
+          <div class="question-display">${t.whatShape}</div>
+          <div class="input-row">${getSelectsHTML('easy')}</div>
+          <div class="question-display">${t.itHas1} <input type="text" id="easy-v" class="answer-input" autocomplete="off" inputmode="numeric" pattern="[0-9]*"> ${t.itHas2} <input type="text" id="easy-e" class="answer-input" autocomplete="off" inputmode="numeric" pattern="[0-9]*"> ${t.itHas3}</div>
+        `;
+      } else if (q.level === 'medium') {
+        area.innerHTML = `
+          <div class="question-display" style="margin-bottom: 30px;">${t.qMedText(shapeName)}</div>
+          <div class="input-row">${t.medV}<input type="text" id="med-v" class="answer-input" autocomplete="off" inputmode="numeric" pattern="[0-9]*">${t.unitV}</div>
+          <div class="input-row">${t.medE}<input type="text" id="med-e" class="answer-input" autocomplete="off" inputmode="numeric" pattern="[0-9]*">${t.unitE}</div>
+        `;
+      } else if (q.level === 'hard') {
+        area.innerHTML = `
+          <div class="question-display" style="margin-bottom: 30px;">${t.qHardText(q.v, q.e)}</div>
+          <div class="input-row">${getSelectsHTML('hard')}</div>
+        `;
+      }
+
+      document.getElementById('feedback-area').classList.add('hidden');
+      document.getElementById('feedback-area').innerHTML = '';
+      
+      document.getElementById('btn-submit').classList.remove('hidden');
+      document.getElementById('btn-next').classList.add('hidden');
+    }
+
+    function checkAnswer() {
+      const q = questions[currentQIndex];
+      const t = i18n[currentLang];
+      let allCorrect = true;
+      let inputsToProcess = [];
+
+      if (q.level === 'easy') {
+        inputsToProcess = [
+          { id: 'easy-base', val: document.getElementById('easy-base').value, target: q.n.toString() },
+          { id: 'easy-type', val: document.getElementById('easy-type').value, target: q.type },
+          { id: 'easy-v', val: document.getElementById('easy-v').value.trim(), target: q.v.toString() },
+          { id: 'easy-e', val: document.getElementById('easy-e').value.trim(), target: q.e.toString() }
+        ];
+      } else if (q.level === 'medium') {
+        inputsToProcess = [
+          { id: 'med-v', val: document.getElementById('med-v').value.trim(), target: q.v.toString() },
+          { id: 'med-e', val: document.getElementById('med-e').value.trim(), target: q.e.toString() }
+        ];
+      } else if (q.level === 'hard') {
+        inputsToProcess = [
+          { id: 'hard-base', val: document.getElementById('hard-base').value, target: q.n.toString() },
+          { id: 'hard-type', val: document.getElementById('hard-type').value, target: q.type }
+        ];
+      }
+
+      let hasEmpty = inputsToProcess.some(i => i.val === '');
+      if (hasEmpty) {
+        openModal(t.cancel === '取消' ? '提示' : 'Notice', t.errFillAll, t.cancel, t.confirm, null);
+        return;
+      }
+
+      const shapeName = getShapeName(q.n, q.type);
+
+      if (!records[currentQIndex]) {
+        let userAnsDisplay = "";
+        if (q.level === 'easy') {
+          let bObj = document.getElementById('easy-base');
+          let tObj = document.getElementById('easy-type');
+          let uBaseTxt = bObj.options[bObj.selectedIndex]?.text || '';
+          let uTypeTxt = tObj.options[tObj.selectedIndex]?.text || '';
+          let vVal = document.getElementById('easy-v').value.trim();
+          let eVal = document.getElementById('easy-e').value.trim();
+          userAnsDisplay = `${uBaseTxt} ${uTypeTxt} (V:${vVal}, E:${eVal})`;
+        } else if (q.level === 'medium') {
+          let vVal = document.getElementById('med-v').value.trim();
+          let eVal = document.getElementById('med-e').value.trim();
+          userAnsDisplay = `V:${vVal}, E:${eVal}`;
+        } else if (q.level === 'hard') {
+          let bObj = document.getElementById('hard-base');
+          let tObj = document.getElementById('hard-type');
+          let uBaseTxt = bObj.options[bObj.selectedIndex]?.text || '';
+          let uTypeTxt = tObj.options[tObj.selectedIndex]?.text || '';
+          userAnsDisplay = `${uBaseTxt} ${uTypeTxt}`;
+        }
+
+        records[currentQIndex] = {
+          qIndex: currentQIndex + 1,
+          questionObj: q,
+          targetAns: q.level === 'medium' ? `V:${q.v}, E:${q.e}` : (q.level === 'hard' ? shapeName : `${shapeName} (V:${q.v}, E:${q.e})`),
+          userFirstWrong: userAnsDisplay,
+          isCorrectOnFirstTry: false
+        };
+      }
+
+      inputsToProcess.forEach(item => {
+        const el = document.getElementById(item.id);
+        if (item.val === item.target) {
+          el.classList.add('input-correct');
+          el.classList.remove('input-error');
+          if(el.tagName === 'SELECT') el.style.pointerEvents = 'none';
+          else el.readOnly = true;
+        } else {
+          allCorrect = false;
+          if (wrongAttempts === 0) {
+            el.classList.add('input-error');
+            el.value = '';
+            setTimeout(() => el.classList.remove('input-error'), 800);
+          }
+        }
+      });
+
+      const feedback = document.getElementById('feedback-area');
+
+      if (allCorrect) {
+        if (wrongAttempts === 0) records[currentQIndex].isCorrectOnFirstTry = true;
+        feedback.className = "feedback-box feedback-success";
+        feedback.innerHTML = `<strong>${t.praise}</strong>`;
+        feedback.classList.remove('hidden');
+        disableInputs();
+        document.getElementById('btn-submit').classList.add('hidden');
+        document.getElementById('btn-next').classList.remove('hidden');
+      } else {
+        wrongAttempts++;
+        if (wrongAttempts < 2) {
+          let formulaHint = q.type === 'prism' ? t.hintPrism : t.hintPyramid;
+          feedback.className = "feedback-box feedback-warning";
+          feedback.innerHTML = `
+            <div><strong>${t.tryAgain}</strong></div>
+            <div style="margin-top:6px; font-size:1rem; color:#744210;">${formulaHint}</div>
+          `;
+          feedback.classList.remove('hidden');
+        } else {
+          let explainHtml = buildExplanationHTML(q, shapeName, t);
+          feedback.className = "feedback-box feedback-danger";
+          feedback.innerHTML = explainHtml;
+          feedback.classList.remove('hidden');
+          disableInputs();
+          document.getElementById('btn-submit').classList.add('hidden');
+          document.getElementById('btn-next').classList.remove('hidden');
+        }
+      }
+    }
+
+    function disableInputs() {
+      document.querySelectorAll('.input-select, .answer-input').forEach(el => el.disabled = true);
+    }
+
+    function buildExplanationHTML(q, shapeName, t) {
+      let formulaBox = q.type === 'prism' ? t.solPrism(q.n, q.v, q.e) : t.solPyramid(q.n, q.v, q.e);
+      let ansLabel = q.level === 'medium' ? `V:${q.v}, E:${q.e}` : (q.level === 'hard' ? shapeName : `${shapeName} (V:${q.v}, E:${q.e})`);
+      return `
+        <div class="vertical-solution-card">
+          <div class="solution-header">${t.solTitle}</div>
+          <div>${t.solDesc(shapeName, q.n)}</div>
+          <div class="step-box">${formulaBox}</div>
+          <div class="solution-footer-ans">${t.correctIs} <strong style="color:#e53e3e; font-size:1.3rem;">${ansLabel}</strong></div>
+          <div class="solution-footer-tip">${t.tip}</div>
+        </div>
+      `;
+    }
+
+    function nextQuestion() {
+      currentQIndex++;
+      if (currentQIndex < questions.length) loadQuestion();
+      else showReport();
+    }
+
+    // --- 報告區塊 ---
+
+    function pad(n) { return n.toString().padStart(2, '0'); }
+
+    function formatDate(d) {
+      return `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+    }
+
+    function formatDuration(start, end) {
+      const diffInSeconds = Math.max(0, Math.floor((end - start) / 1000));
+      const mins = Math.floor(diffInSeconds / 60);
+      const secs = diffInSeconds % 60;
+      if(currentLang === 'zh') {
+        return (mins > 0) ? `${mins}分鐘${pad(secs)}秒` : `${secs}秒`;
+      } else {
+        return (mins > 0) ? `${mins} min ${secs} sec` : `${secs} sec`;
+      }
+    }
+
+    function showReport() {
+      const endTimeObj = new Date();
+      const t = i18n[currentLang];
+      
+      document.getElementById('page-quiz').classList.add('hidden');
+      document.getElementById('page-report').classList.remove('hidden');
+
+      document.getElementById('rep-title').innerText = t.repTitle;
+      document.getElementById('lbl-rep-start').innerText = t.repStart;
+      document.getElementById('lbl-rep-end').innerText = t.repEnd;
+      document.getElementById('lbl-rep-dur').innerText = t.repDur;
+      document.getElementById('lbl-rep-tot').innerText = t.repTotal;
+      document.getElementById('lbl-rep-acc').innerText = t.repAcc;
+      document.getElementById('lbl-rep-right').innerText = t.repRight;
+      document.getElementById('lbl-rep-wrong').innerText = t.repWrong;
+      document.getElementById('btn-dl').innerText = t.btnDL;
+      document.getElementById('btn-retry').innerText = t.btnRetry;
+      document.getElementById('btn-home').innerText = t.btnHome;
+
+      document.getElementById('val-start-time').innerText = formatDate(startTimeObj);
+      document.getElementById('val-end-time').innerText = formatDate(endTimeObj);
+      document.getElementById('val-duration').innerText = formatDuration(startTimeObj, endTimeObj);
+
+      let correctCount = records.filter(r => r.isCorrectOnFirstTry).length;
+      const total = records.length;
+      const accuracyPct = Math.round((correctCount / total) * 100);
+
+      document.getElementById('val-correct-count').innerText = `${correctCount} / ${total}`;
+      document.getElementById('val-accuracy').innerText = `${accuracyPct}%`;
+
+      const correctContainer = document.getElementById('correct-list-container');
+      correctContainer.innerHTML = '';
+      const correctItems = records.filter(r => r.isCorrectOnFirstTry);
+
+      if (correctItems.length === 0) {
+        correctContainer.innerHTML = `<div style="font-size:0.95rem; color:#718096; padding-left:5px;">${t.noRight}</div>`;
+      } else {
+        correctItems.forEach(item => {
+          let div = document.createElement('div');
+          div.className = 'item-card-correct';
+          let sName = getShapeName(item.questionObj.n, item.questionObj.type);
+          div.innerHTML = `
+            <div class="item-q-title">${t.qLabel(item.qIndex, sName)}</div>
+            <div>${t.ansIs} ${item.targetAns}</div>
+          `;
+          correctContainer.appendChild(div);
+        });
+      }
+
+      const wrongContainer = document.getElementById('wrong-list-container');
+      wrongContainer.innerHTML = '';
+      const wrongItems = records.filter(r => !r.isCorrectOnFirstTry);
+
+      if (wrongItems.length === 0) {
+        wrongContainer.innerHTML = `<div style="font-size:0.95rem; color:#38a169; padding-left:5px;">${t.noWrong}</div>`;
+      } else {
+        wrongItems.forEach(item => {
+          let div = document.createElement('div');
+          div.className = 'item-card-wrong';
+          let sName = getShapeName(item.questionObj.n, item.questionObj.type);
+          div.innerHTML = `
+            <div class="item-q-title">${t.qLabel(item.qIndex, sName)}</div>
+            <div>${t.yourAns} ${item.userFirstWrong || '-'}</div>
+            <div style="margin-top:4px;">${t.ansIs} ${item.targetAns}</div>
+          `;
+          wrongContainer.appendChild(div);
+        });
+      }
+    }
+
+    function downloadReportImage() {
+      const element = document.getElementById('report-card-to-capture');
+      if (!element) return;
+      html2canvas(element, { scale: 2, backgroundColor: '#ffffff' }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = `3D_Shapes_Report_${new Date().toISOString().slice(0,10)}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      }).catch(err => alert('下載失敗：' + err));
+    }
+
+    function openModal(title, msg, cancelTxt, confirmTxt, onConfirm) {
+      document.getElementById('modal-title').innerText = title;
+      document.getElementById('modal-msg').innerText = msg;
+      document.getElementById('modal-cancel-btn').innerText = cancelTxt;
+      document.getElementById('modal-confirm-btn').innerText = confirmTxt;
+      modalActionCallback = onConfirm;
+      document.getElementById('custom-modal').classList.add('active');
+    }
+
+    function closeModal() { document.getElementById('custom-modal').classList.remove('active'); }
+
+    function confirmModalAction() {
+      closeModal();
+      if (modalActionCallback) modalActionCallback();
+    }
+
+    function askReturnHome() {
+      const t = i18n[currentLang];
+      openModal(t.modalReturnTitle, t.modalReturnMsg, t.cancel, t.confirm, goHome);
+    }
+
+    function goHome() {
+      document.getElementById('page-quiz').classList.add('hidden');
+      document.getElementById('page-report').classList.add('hidden');
+      document.getElementById('page-home').classList.remove('hidden');
+    }
+  </script>
+  <script src="https://mathteacher1618.github.io/my_fixes/ipad_fix.js"></script>
+</body>
+</html>
